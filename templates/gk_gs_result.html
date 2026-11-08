@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result | Exam Arena</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #080b18;
+            color: #f5f6ff;
+            font-family: 'Inter', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .result-wrapper {
+            max-width: 1100px;
+            margin: auto;
+            padding: 45px 20px 70px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .brand span {
+            color: #8b7cff;
+        }
+
+        .back-link {
+            color: #b7b9d1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid #5145a9;
+            background: #17152f;
+            color: #b8adff;
+            border-radius: 30px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(30px, 5vw, 46px);
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #969bb7;
+            font-size: 15px;
+        }
+
+        .score-card {
+            background:
+                radial-gradient(circle at top right,
+                rgba(119, 91, 255, .20), transparent 38%),
+                #11162a;
+            border: 1px solid #292e4b;
+            border-radius: 24px;
+            padding: 35px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .score-content {
+            text-align: center;
+        }
+
+        .score-ring {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(
+                #8b7cff {{ ((score / total) * 100) if total else 0 }}%,
+                #292d46 0
+            );
+            position: relative;
+        }
+
+        .score-ring::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            background: #11162a;
+            border-radius: 50%;
+        }
+
+        .score-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-inner h2 {
+            font-size: 42px;
+        }
+
+        .score-inner p {
+            color: #a5a9c3;
+            font-size: 13px;
+        }
+
+        .score-content h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .score-content > p {
+            color: #999fba;
+            font-size: 14px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: #191f36;
+            border: 1px solid #303653;
+            border-radius: 16px;
+            padding: 23px 18px;
+        }
+
+        .stat-box .number {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .stat-box p {
+            color: #a5abc4;
+            font-size: 13px;
+        }
+
+        .correct .number {
+            color: #49dfa0;
+        }
+
+        .incorrect .number {
+            color: #ff7585;
+        }
+
+        .total .number {
+            color: #9c8dff;
+        }
+
+        .percentage .number {
+            color: #57d5f5;
+        }
+
+        .review-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 42px 0 20px;
+            gap: 12px;
+        }
+
+        .review-heading h2 {
+            font-size: 23px;
+        }
+
+        .review-heading span {
+            color: #999fba;
+            font-size: 13px;
+        }
+
+        .question-card {
+            background: #11162a;
+            border: 1px solid #292f4a;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 15px;
+        }
+
+        .question-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            color: #a99cff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status.correct-status {
+            color: #49dfa0;
+            background: #12352d;
+        }
+
+        .status.wrong-status {
+            color: #ff8794;
+            background: #3a202b;
+        }
+
+        .question-card h3 {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 17px;
+        }
+
+        .answer-line {
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-top: 9px;
+            font-size: 13px;
+            background: #1a2037;
+            color: #c5c9dc;
+        }
+
+        .answer-line strong {
+            color: white;
+        }
+
+        .correct-answer {
+            border: 1px solid #287e62;
+            background: #102c28;
+        }
+
+        .your-wrong-answer {
+            border: 1px solid #864453;
+            background: #301c29;
+        }
+
+        .explanation {
+            margin-top: 14px;
+            padding: 14px;
+            background: #191f36;
+            border-left: 3px solid #8b7cff;
+            border-radius: 7px;
+            color: #b6bbd2;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .explanation strong {
+            color: #a99cff;
+        }
+
+        .bottom-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 13px;
+            margin-top: 35px;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            padding: 13px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: .25s;
+        }
+
+        .primary-btn {
+            background: #7968ed;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #9385ff;
+            transform: translateY(-3px);
+        }
+
+        .secondary-btn {
+            border: 1px solid #424765;
+            color: #d4d7e9;
+        }
+
+        .secondary-btn:hover {
+            background: #1b2038;
+        }
+
+        @media(max-width: 700px) {
+            .score-card {
+                grid-template-columns: 1fr;
+                padding: 25px 18px;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .stat-box {
+                padding: 18px 12px;
+            }
+
+            .stat-box .number {
+                font-size: 25px;
+            }
+
+            .top-bar {
+                margin-bottom: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="result-wrapper">
+
+    <div class="top-bar">
+        <div class="brand">EXAM <span>ARENA</span></div>
+        
+    </div>
+
+    <section class="hero">
+        <div class="result-tag">QUIZ COMPLETED</div>
+
+        <h1>Your Performance Report</h1>
+
+        {% if difficulty is defined and level is defined %}
+            <p>
+                {{ subject_name }} · {{ difficulty }} · Level {{ level }}
+            </p>
+        {% endif %}
+
+        <p>
+            Here is your {{ subject_name|default('GK / GS') }}
+            quiz performance and answer analysis.
+        </p>
+    </section>
+
+    {% set percentage = ((score / total) * 100) if total else 0 %}
+    {% set wrong = total - score %}
+
+    <section class="score-card">
+
+        <div class="score-content">
+
+            <div class="score-ring">
+                <div class="score-inner">
+                    <h2>{{ percentage|round|int }}%</h2>
+                    <p>YOUR SCORE</p>
+                </div>
+            </div>
+
+            {% if percentage >= 80 %}
+                <h3>Excellent Performance!</h3>
+                <p>You performed really well. Keep learning!</p>
+            {% elif percentage >= 50 %}
+                <h3>Good Effort!</h3>
+                <p>You're making progress. Keep practising!</p>
+            {% else %}
+                <h3>Keep Improving!</h3>
+                <p>Review the answers and try another quiz.</p>
+            {% endif %}
+
+        </div>
+
+        <div class="stats">
+
+            <div class="stat-box correct">
+                <div class="number">{{ score }}</div>
+                <p>Correct Answers</p>
+            </div>
+
+            <div class="stat-box incorrect">
+                <div class="number">{{ wrong }}</div>
+                <p>Incorrect Answers</p>
+            </div>
+
+            <div class="stat-box total">
+                <div class="number">{{ total }}</div>
+                <p>Total Questions</p>
+            </div>
+
+            <div class="stat-box percentage">
+                <div class="number">{{ percentage|round|int }}%</div>
+                <p>Accuracy</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="review-heading">
+        <h2>Answer Review</h2>
+        <span>{{ total }} Questions</span>
+    </div>
+
+    {% for q in questions %}
+
+    <article class="question-card">
+
+        <div class="question-top">
+
+            <span class="question-number">
+                QUESTION {{ loop.index }}
+            </span>
+
+            {% if q.is_correct %}
+                <span class="status correct-status">✓ CORRECT</span>
+            {% else %}
+                <span class="status wrong-status">✕ INCORRECT</span>
+            {% endif %}
+
+        </div>
+
+        <h3>{{ q.question }}</h3>
+
+        {% set selected = q.selected_answer|upper %}
+        {% set answer = q.correct_option|upper %}
+
+        {% if selected %}
+            <div class="answer-line
+                {% if q.is_correct %}correct-answer
+                {% else %}your-wrong-answer{% endif %}">
+                <strong>Your Answer:</strong>
+                {{ selected }}.
+                {{ q['option_' + selected.lower()] }}
+            </div>
+        {% else %}
+            <div class="answer-line your-wrong-answer">
+                <strong>Your Answer:</strong> Not attempted
+            </div>
+        {% endif %}
+
+        <div class="answer-line correct-answer">
+            <strong>Correct Answer:</strong>
+            {{ answer }}.
+            {{ q['option_' + answer.lower()] }}
+        </div>
+
+        {% if q.explanation %}
+            <div class="explanation">
+                <strong>Explanation:</strong>
+                {{ q.explanation }}
+            </div>
+        {% endif %}
+
+    </article>
+
+    {% endfor %}
+
+    
+    <div class="bottom-actions">
+
+        {% if subject_slug is defined and subject_slug %}
+
+            <a href="{{ url_for(
+                'start_subject_exam',
+                subject_slug=subject_slug,
+                difficulty=difficulty_slug,
+                level=level
+            ) }}" class="action-btn primary-btn">
+                ↻ Try Again
+            </a>
+
+            {% if next_level_url %}
+                <a href="{{ next_level_url }}" class="action-btn primary-btn">
+                    Next Level →
+                </a>
+            {% else %}
+                <span class="action-btn primary-btn">
+                    🎉 All Levels Completed!
+                </span>
+            {% endif %}
+
+        {% else %}
+
+            <a href="{{ url_for('gk_gs') }}"
+            class="action-btn primary-btn">
+                ↻ Try Another Quiz
+            </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('exams') }}"
+        class="action-btn secondary-btn">
+            Back to Exam Arena
+        </a>
+
+    </div>
+
+
+</div>
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Subjects | SmartLearn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <a class="brand" href="/">✦ Smart<span>Learn</span></a>
+        <span class="nav-label">LEARN · PRACTICE · GROW</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="eyebrow">YOUR LEARNING JOURNEY</span>
+
+            <h1>
+                Class {{ selected_class.class_number }}<br>
+                <span>Explore subjects</span>
+            </h1>
+
+            <p class="hero-text">
+                Choose a subject and continue your learning journey.
+            </p>
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">YOUR CURRICULUM</span>
+                    <h2>Choose a subject</h2>
+                </div>
+            </div>
+        </section>
+
+        <section class="zones">
+            {% for subject in subjects %}
+                <a href="{{ url_for('subject_options', subject_id=subject.id) }}"
+                class="zone-card students"
+                style="text-decoration: none; color: inherit;">
+
+                    <div class="card-top">
+                        <span class="zone-number">SUBJECT</span>
+                        <span class="arrow">↗</span>
+                    </div>
+
+                    <div class="illustration">📘</div>
+
+                    <h3>{{ subject.name }}</h3>
+
+                    <p>
+                        Explore chapters, study notes and practice questions.
+                    </p>
+
+                    <div class="card-bottom">
+                        <span>Explore subject</span>
+                        <span>→</span>
+                    </div>
+
+                </a>
+            {% else %}
+                <p>No subjects found for this class yet.</p>
+            {% endfor %}
+        </section>
+
+        <div class="home-back-wrapper">
+                <a href="/students" class="home-back-btn">
+                    ← Back to Students
+                </a>
+        </div>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+    </main>
+
+</body>
+</html>

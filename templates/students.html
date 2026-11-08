@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Hub | SmartLearn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .student-hero {
+            padding: 30px 0 20px;
+        }
+
+        .student-title {
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+            font-weight: 800;
+            letter-spacing: -1.8px;
+            margin: 22px 0 16px;
+        }
+        .back-link {
+            color: #63d9ff;
+            text-decoration: none;
+        }
+
+        .student-title span {
+            color: #7357e8;
+        }
+
+        .student-description {
+            max-width: 620px;
+            line-height: 1.8;
+            opacity: 0.8;
+        }
+
+        .class-section {
+            margin-top: 45px;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            margin-top: 25px;
+        }
+
+        .class-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 240px;
+            padding: 25px;
+            border-radius: 22px;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid rgba(130, 130, 160, 0.2);
+            background: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 8px 30px rgba(30, 30, 60, 0.04);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .class-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(80, 60, 150, 0.12);
+        }
+
+        .class-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .class-number {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .class-icon {
+            width: 54px;
+            height: 54px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: #eeeaff;
+            font-size: 27px;
+        }
+
+        .class-card h3 {
+            font-size: 23px;
+            margin: 25px 0 9px;
+            font-weight: 800;
+        }
+
+        .class-card p {
+            font-size: 14px;
+            line-height: 1.7;
+            opacity: 0.75;
+        }
+
+        .class-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #7357e8;
+        }
+
+        .class-card:nth-child(3n + 2) .class-icon {
+            background: #e2f7ed;
+        }
+
+        .class-card:nth-child(3n) .class-icon {
+            background: #fff0dc;
+        }
+
+        .empty-classes {
+            padding: 28px;
+            border-radius: 20px;
+            margin-top: 24px;
+            line-height: 1.8;
+            border: 1px solid rgba(130, 130, 160, 0.2);
+        }
+
+        .home-back-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 35px 0 25px;
+        }
+
+        .home-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 25px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7968ed, #5141b8);
+            border: 1px solid #9585ff;
+            box-shadow: 0 5px 20px rgba(121, 104, 237, .25);
+            transition: .3s ease;
+        }
+
+        .home-back-btn:hover {
+            color: #fff;
+            transform: translateY(-4px);
+            box-shadow: 0 9px 28px rgba(121, 104, 237, .45);
+        }
+
+        @media (max-width: 850px) {
+            .class-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .class-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .class-card {
+                min-height: 220px;
+            }
+
+            .student-title {
+                letter-spacing: -1px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a class="brand" href="/">✦ Smart<span>Learn</span></a>
+        <span class="nav-label">LEARN · PRACTICE · GROW</span>
+    </header>
+
+    <main class="container">
+
+
+
+        <section class="student-hero">
+            <span class="eyebrow">
+                <span class="status-dot"></span>
+                YOUR NEXT CHAPTER STARTS HERE
+            </span>
+
+            <h1 class="student-title">
+                Welcome to the<br>
+                <span>Student Hub.</span>
+            </h1>
+
+            <p class="student-description">
+                Build strong concepts, explore your subjects, learn important
+                formulas and test your knowledge. Choose your class to begin.
+            </p>
+        </section>
+
+        <section class="class-section">
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">EXPLORE YOUR CLASS</span>
+                    <h2>Choose your learning path</h2>
+                </div>
+
+                <span class="zone-count">CLASSES 6–12</span>
+            </div>
+
+            {% if classes %}
+
+                <div class="class-grid">
+
+                    {% for item in classes %}
+
+                        <a class="class-card"
+                           href="{{ url_for('class_subjects',
+                                            class_id=item.id) }}">
+
+                            <div class="class-top">
+                                <span class="class-number">
+                                    CLASS {{ item.class_number }}
+                                </span>
+
+                                <span class="class-icon">📚</span>
+                            </div>
+
+                            <h3>Class {{ item.class_number }}</h3>
+
+                            <p>
+                                Explore subjects, chapters, study notes
+                                and practice questions.
+                            </p>
+
+                            <div class="class-bottom">
+                                <span>Start learning</span>
+                                <span>↗</span>
+                            </div>
+
+                        </a>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-classes">
+                    <h3>No classes available yet</h3>
+                    <p>
+                        Please check whether the classes table contains
+                        Class 6 to Class 12.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <div class="home-back-wrapper">
+                <a href="/" class="home-back-btn">
+                    ← Back to Home
+                </a>
+        </div>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>

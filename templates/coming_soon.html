@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polity - Coming Soon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<style>
+    .coming-soon-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.coming-soon-content {
+    max-width: 500px;
+}
+
+.coming-soon-content h2 {
+    font-size: 38px;
+    margin: 20px 0;
+}
+
+.coming-soon-content p {
+    margin-bottom: 30px;
+}
+
+ .home-back-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 35px 0 25px;
+        }
+
+        .home-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 25px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7968ed, #5141b8);
+            border: 1px solid #9585ff;
+            box-shadow: 0 5px 20px rgba(121, 104, 237, .25);
+            transition: .3s ease;
+        }
+
+        .home-back-btn:hover {
+            color: #fff;
+            transform: translateY(-4px);
+            box-shadow: 0 9px 28px rgba(121, 104, 237, .45);
+        }
+</style>
+<body>
+
+    <div class="coming-soon-page">
+        <div class="coming-soon-content">
+            <div class="exam-icon">⚖️</div>
+            <h1>Chapter</h1>
+            <h2>Coming Soon!</h2>
+            <p>We're preparing something amazing for you.</p>
+
+            <a href="/exams" class="home-back-btn">
+                ← Back to Exams
+            </a>
+
+        </div>
+    </div>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+
+</body>
+</html>

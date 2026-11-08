@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Dashboard | SmartLearn</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .kids-dashboard {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px 22px 60px;
+        }
+
+        .back-link {
+            color: #63d9ff;
+            text-decoration: none;
+        }
+
+        .kids-hero {
+            margin: 35px 0;
+            padding: 35px;
+            border-radius: 24px;
+            background: linear-gradient(120deg, #27205a, #102d4c);
+            border: 1px solid #484080;
+        }
+
+        .kids-hero h1 {
+            font-size: clamp(30px, 5vw, 48px);
+            
+        }
+
+        .kids-hero h1 span {
+            color: #63d9ff;
+        }
+
+        .kids-hero p {
+            line-height: 1.8;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+            padding: 20px;
+        
+        }
+
+        .quiz-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 230px;
+            padding: 25px;
+            color: inherit;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 22px;
+            background: rgba(255,255,255,.045);
+            transition: transform .2s, border-color .2s;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .quiz-icon {
+            font-size: 42px;
+        }
+
+        .quiz-card h2 {
+            margin: 18px 0 8px;
+        }
+
+        .quiz-card p {
+            line-height: 1.7;
+            opacity: .8;
+        }
+
+        .quiz-link {
+            margin-top: auto;
+            padding-top: 15px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .count-number { --accent: #63d9ff; }
+        .count-things { --accent: #ffca70; }
+        .first-letter { --accent: #c4a0ff; }
+        .advanced { --accent: #72edb4; }
+
+        @media (max-width: 650px) {
+            .quiz-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kids-hero {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<main class="kids-dashboard">
+
+    <a href="/" class="back-link">← Back to Home</a>
+
+    <section class="kids-hero">
+        <div>🌈 SMARTLEARN • KIDS ZONE</div>
+        <h1>Ready to <span>Learn & Play?</span> 🎮</h1>
+        <p>
+            Choose your favourite activity. Each card opens its own quiz
+            with questions, answers and your final score.
+        </p>
+    </section>
+
+    <h2>🎯 Choose Your Quiz</h2>
+    <p>Pick one activity to begin your learning adventure.</p>
+
+    <section class="quiz-grid">
+
+        <a href="/kids/quiz/count-number"
+           class="quiz-card count-number">
+            <span class="quiz-icon">🔢</span>
+            <h2>Count Number</h2>
+            <p>Recognize numbers, learn counting and find the next number.</p>
+            <span class="quiz-link">Start Number Quiz →</span>
+        </a>
+
+        <a href="/kids/quiz/count-things"
+           class="quiz-card count-things">
+            <span class="quiz-icon">🍎</span>
+            <h2>Count Things</h2>
+            <p>Count fruits, stars, animals and other fun objects.</p>
+            <span class="quiz-link">Start Counting Quiz →</span>
+        </a>
+
+        <a href="/kids/quiz/first-letter"
+           class="quiz-card first-letter">
+            <span class="quiz-icon">🔤</span>
+            <h2>First Letter</h2>
+            <p>Look at a picture and identify the first letter of its name.</p>
+            <span class="quiz-link">Start Letter Quiz →</span>
+        </a>
+
+        
+        <a href="/kids/quiz/add-number"
+        class="quiz-card addition">
+            <span class="quiz-icon">➕</span>
+            <h2>Add Number</h2>
+            <p>Practice addition with fun and easy number questions.</p>
+            <span class="quiz-link">Start Addition Quiz →</span>
+        </a>
+
+
+        <a href="/kids/quiz/advanced-quiz"
+           class="quiz-card advanced">
+            <span class="quiz-icon">🧠</span>
+            <h2>Advanced Quiz</h2>
+            <p>Try more challenging questions and test what you have learned.</p>
+            <span class="quiz-link">Challenge Yourself →</span>
+        </a>
+
+    </section>
+<footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+
+</main>
+</body>
+</html>

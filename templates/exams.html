@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Arena | SmartLearn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .exam-hero {
+            padding: 75px 0 35px;
+        }
+
+        .exam-title {
+            margin-top: 22px;
+            font-size: clamp(40px, 6vw, 68px);
+            line-height: 1.1;
+            letter-spacing: -3px;
+        }
+
+        .exam-title span {
+            background: linear-gradient(90deg, #a78bfa, #58e3ad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .exam-description {
+            max-width: 590px;
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.9;
+        }
+
+        .exam-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 35px 0 55px;
+        }
+
+        .exam-stat {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(255,255,255,.035);
+        }
+
+        .exam-stat strong {
+            display: block;
+            font-size: 25px;
+            color: #a78bfa;
+        }
+
+        .exam-stat span {
+            display: block;
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 11px;
+            letter-spacing: .6px;
+        }
+
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .exam-card {
+            --exam-accent: #a78bfa;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 265px;
+            padding: 23px;
+            overflow: hidden;
+            border: 1px solid #302b49;
+            border-radius: 19px;
+            background: linear-gradient(145deg, #19172b, #10101d);
+            transition: .3s ease;
+        }
+
+        .exam-card::before {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            top: -65px;
+            right: -60px;
+            border-radius: 50%;
+            background: var(--exam-accent);
+            filter: blur(65px);
+            opacity: .18;
+            pointer-events: none;
+        }
+
+        .exam-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--exam-accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,.3);
+        }
+
+        .exam-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exam-index {
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .exam-icon {
+            display: grid;
+            place-items: center;
+            width: 57px;
+            height: 57px;
+            margin-top: 23px;
+            border-radius: 16px;
+            background: color-mix(in srgb, var(--exam-accent) 12%, transparent);
+            border: 1px solid color-mix(in srgb, var(--exam-accent) 35%, transparent);
+            font-size: 27px;
+        }
+
+        .exam-card h3 {
+            margin-top: 19px;
+            color: #f5f3ff;
+            font-size: 19px;
+            letter-spacing: -.5px;
+        }
+
+        .exam-card p {
+            margin-top: 9px;
+            color: #aaa7c2;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .exam-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 17px;
+            color: var(--exam-accent);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .exam-card-bottom span:last-child {
+            font-size: 19px;
+        }
+
+        .exam-card:nth-child(2) { --exam-accent: #58e3ad; }
+        .exam-card:nth-child(3) { --exam-accent: #ffad76; }
+        .exam-card:nth-child(4) { --exam-accent: #58c8ff; }
+        .exam-card:nth-child(5) { --exam-accent: #e89bff; }
+        .exam-card:nth-child(6) { --exam-accent: #ffd166; }
+        .exam-card:nth-child(7) { --exam-accent: #67d9ff; }
+        .exam-card:nth-child(8) { --exam-accent: #ff829f; }
+
+        .difficulty-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 55px;
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .difficulty-info h3 {
+            width: 100%;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .difficulty-pill {
+            padding: 8px 13px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            color: #c9c3df;
+            font-size: 11px;
+        }
+
+        .difficulty-pill.easy { color: #58e3ad; }
+        .difficulty-pill.medium { color: #ffd166; }
+        .difficulty-pill.hard { color: #ff829f; }
+
+        .home-back-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 35px 0 25px;
+        }
+
+        .home-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 25px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #7968ed, #5141b8);
+            border: 1px solid #9585ff;
+            box-shadow: 0 5px 20px rgba(121, 104, 237, .25);
+            transition: .3s ease;
+        }
+
+        .home-back-btn:hover {
+            color: #fff;
+            transform: translateY(-4px);
+            box-shadow: 0 9px 28px rgba(121, 104, 237, .45);
+        }
+
+        
+
+        @media (max-width: 850px) {
+            .exam-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .exam-hero {
+                padding-top: 52px;
+            }
+
+            .exam-title {
+                letter-spacing: -2px;
+            }
+
+            .exam-stats {
+                gap: 9px;
+            }
+
+            .exam-stat {
+                padding: 13px;
+            }
+
+            .exam-stat strong {
+                font-size: 20px;
+            }
+
+            .exam-stat span {
+                font-size: 9px;
+            }
+
+            .exam-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .exam-card {
+                min-height: 245px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="brand">✦ Smart<span>Learn</span></a>
+        <div class="nav-label">LEARN · PRACTICE · ACHIEVE</div>
+    </nav>
+
+    <main class="container">
+
+        <section class="exam-hero">
+            <div class="eyebrow">
+                <span class="status-dot"></span>
+                YOUR COMPETITIVE EXAM ZONE
+            </div>
+
+            <h1 class="exam-title">
+                Enter the <span>Exam Arena.</span>
+            </h1>
+
+            <p class="exam-description">
+                Prepare smarter, practice consistently and challenge your
+                knowledge. Explore important competitive-exam subjects
+                and improve your performance one level at a time.
+            </p>
+        </section>
+
+        <section class="exam-stats">
+            <div class="exam-stat">
+                <strong>08</strong>
+                <span>SUBJECTS</span>
+            </div>
+
+            <div class="exam-stat">
+                <strong>800</strong>
+                <span>PLANNED QUESTIONS</span>
+            </div>
+
+            <div class="exam-stat">
+                <strong>03</strong>
+                <span>DIFFICULTY LEVELS</span>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">CHOOSE YOUR SUBJECT</div>
+                    <h2>Explore Exam Subjects</h2>
+                </div>
+
+                <div class="zone-count">08 SUBJECTS AVAILABLE</div>
+            </div>
+
+            <div class="exam-grid">
+
+                <a href="/exams/gk-gs" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">01 / GENERAL</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">🌍</div>
+                    <h3>GK / GS</h3>
+                    <p>Build awareness of important national and international facts, events and general knowledge.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('basic_computer') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">02 / TECHNOLOGY</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">💻</div>
+                    <h3>Basic Computer</h3>
+                    <p>Practice computer fundamentals, hardware, software, networking and digital knowledge.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('general_science') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">07 / DISCOVERY</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">🔬</div>
+                    <h3>General Science</h3>
+                    <p>Practice essential concepts from Physics, Chemistry, Biology and everyday science.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('reasoning') }}"  class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">08 / LOGIC</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">🧠</div>
+                    <h3>Reasoning</h3>
+                    <p>Improve logical thinking through patterns, series, coding and analytical questions.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+
+                <a href="{{ url_for('history') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">03 / PAST</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">🏛️</div>
+                    <h3>History</h3>
+                    <p>Explore ancient, medieval and modern history with important historical events.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('geography_coming_soon') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">04 / PLANET</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">🗺️</div>
+                    <h3>Geography</h3>
+                    <p>Understand physical geography, Indian geography, climate, resources and maps.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('polity_coming_soon') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">05 / GOVERNANCE</span>
+                        <span class="arrow">↗</span>
+                    </div>
+
+                    <div class="exam-icon">⚖️</div>
+                    <h3>Polity</h3>
+                    <p>Learn the Indian Constitution, fundamental rights, Parliament and government.</p>
+
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('economics_coming_soon') }}" class="exam-card">
+                    <div class="exam-card-top">
+                        <span class="exam-index">06 / FINANCE</span>
+                        <span class="arrow">↗</span>
+                    </div>
+                    <div class="exam-icon">📊</div>
+                    <h3>Economics</h3>
+                    <p>Explore the economy, banking, budgets, markets and essential economic concepts.</p>
+                    <div class="exam-card-bottom">
+                        <span>Explore Subject</span>
+                        <span>→</span>
+                    </div>
+                </a>
+
+                
+            </div>
+        </section>
+
+        <section class="difficulty-info">
+            <h3>Step By Step Challenge Level</h3>
+            <span class="difficulty-pill easy">● Easy</span>
+            <span class="difficulty-pill medium">● Medium</span>
+            <span class="difficulty-pill hard">● Hard</span>
+        </section>
+
+        <div class="home-back-wrapper">
+            <a href="/" class="home-back-btn">
+                ← Back to Home
+            </a>
+        </div>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Learn smarter. Dream bigger.</span>
+        </footer>
+
+    </main>
+
+</body>
+</html>

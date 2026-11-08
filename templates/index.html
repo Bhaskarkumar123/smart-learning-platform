@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Learning | Explore & Learn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <a class="brand" href="/">✦ Smart<span>Learn</span></a>
+        <span class="nav-label">LEARN · PRACTICE · GROW</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="eyebrow"><span class="status-dot"></span> YOUR LEARNING JOURNEY STARTS HERE</span>
+
+            <h1>Learn smarter<br><span>Dream bigger</span></h1>
+
+            <p class="hero-text">
+                One platform, endless possibilities. Choose your path,
+                challenge yourself and make every day count.
+            </p>
+
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">EXPLORE YOUR WORLD</span>
+                    <h2>Choose your learning zone</h2>
+                </div>
+                <span class="zone-count">03 ZONES AVAILABLE</span>
+            </div>
+        </section>
+
+        <section class="zones">
+
+            <a href="/kids" class="zone-card kids">
+                <div class="card-top">
+                    <span class="zone-number">01 / PLAY</span>
+                    <span class="arrow">↗</span>
+                </div>
+                <div class="illustration">🧩</div>
+                <span class="tag">CLASSES 1–5</span>
+                <h3>Little Explorers</h3>
+                <p>Learn through fun games, colorful puzzles, numbers and exciting challenges.</p>
+                <div class="card-bottom">
+                    <span>Discover the fun</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <a href="/students" class="zone-card students">
+                <div class="card-top">
+                    <span class="zone-number">02 / LEARN</span>
+                    <span class="arrow">↗</span>
+                </div>
+                <div class="illustration">📚</div>
+                <span class="tag">CLASSES 6–12</span>
+                <h3>Student Hub</h3>
+                <p>Master subjects, explore formulas, practice questions and track your progress.</p>
+                <div class="card-bottom">
+                    <span>Level up your skills</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            <a href="/exams" class="zone-card exams">
+                <div class="card-top">
+                    <span class="zone-number">03 / ACHIEVE</span>
+                    <span class="arrow">↗</span>
+                </div>
+                <div class="illustration">🎯</div>
+                <span class="tag">EXAM PREPARATION</span>
+                <h3>Exam Arena</h3>
+                <p>Practice mock tests, challenge the clock and prepare for your next big goal.</p>
+                <div class="card-bottom">
+                    <span>Start your preparation</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+            
+            <!-- About the Developer Card -->
+            <a href="/about" class="zone-card about">
+                <div class="card-top">
+                    <span class="zone-number">04 / DEVELOPER</span>
+                    <span class="arrow">↗</span>
+                </div>
+
+                <div class="illustration">👨‍💻</div>
+
+                <span class="tag">MEET THE CREATOR</span>
+                <h3>About the Developer</h3>
+
+                <p>
+                    Get to know the mind behind SmartLearn.
+                    Explore the developer's background, skills,
+                    vision and passion for building technology.
+                </p>
+
+                <div class="card-bottom">
+                    <span>Discover the developer</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+
+        </section>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+    </main>
+
+</body>
+</html>

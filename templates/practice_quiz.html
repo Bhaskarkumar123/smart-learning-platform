@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Quiz | SmartLearn</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <a class="brand" href="/">Smart<span>Learn</span></a>
+        <span class="nav-label">PRACTICE QUIZ</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="eyebrow">TEST YOUR KNOWLEDGE</span>
+            <h1>{{ subject.name }}<br>
+                <span>Practice Quiz</span>
+            </h1>
+        </section>
+
+        {% if questions %}
+        <form method="POST"
+              action="{{ url_for(submit_endpoint, subject_id=subject.id, level=level) }}">
+
+            {% for q in questions %}
+            <article class="zone-card students"
+                     style="margin-bottom: 20px;">
+                <h3>{{ loop.index }}. {{ q.question_text }}</h3>
+
+                {% for letter, option in [
+                    ('A', q.option_a),
+                    ('B', q.option_b),
+                    ('C', q.option_c),
+                    ('D', q.option_d)
+                ] %}
+                <label style="display:block; margin:12px 0;">
+                    <input type="radio"
+                           name="question_{{ q.id }}"
+                           value="{{ letter }}" required>
+                    {{ letter }}. {{ option }}
+                </label>
+                {% endfor %}
+            </article>
+            {% endfor %}
+
+            <button type="submit">Submit Answers</button>
+        </form>
+        {% else %}
+        <p>No quiz questions are available for this subject yet.</p>
+        {% endif %}
+
+        <p style="margin-top:30px;">
+            <a href="{{ url_for('subject_options',
+                                subject_id=subject.id) }}">
+                ← Back to learning options
+            </a>
+        </p>
+    </main>
+</body>
+</html>

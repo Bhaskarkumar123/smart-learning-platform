@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result | SmartLearn</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .result-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 28px 0;
+        }
+
+        .result-btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            background: linear-gradient(135deg, #7c5cff, #4d8dff);
+            color: white;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .result-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .result-message {
+            margin: 24px 0;
+            padding: 22px;
+            border-radius: 14px;
+            background: rgba(124, 92, 255, 0.10);
+            border: 1px solid rgba(124, 92, 255, 0.35);
+        }
+
+        .result-message h2 {
+            margin-top: 0;
+        }
+
+        .answer-details {
+            overflow-wrap: anywhere;
+        }
+
+        
+        /* Back to Subject Button */
+
+        .result-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border: 1px solid rgba(124, 92, 255, 0.4);
+            border-radius: 12px;
+            background: linear-gradient(
+                135deg,
+                rgba(124, 92, 255, 0.18),
+                rgba(61, 240, 255, 0.08)
+            );
+            color: #c8baff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+        }
+
+        .result-btn:hover {
+            background: linear-gradient(135deg, #7c5cff, #6044d8);
+            color: #ffffff;
+            border-color: #7c5cff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 22px rgba(124, 92, 255, 0.3);
+        }
+
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <a class="brand" href="/">Smart<span>Learn</span></a>
+        <span class="nav-label">QUIZ RESULTS</span>
+    </header>
+
+    <main class="container">
+
+        <!-- Quiz Score -->
+        <section class="hero">
+            <span class="eyebrow">QUIZ COMPLETED</span>
+
+            <h1>
+                {{ score }} / {{ total }}<br>
+                <span>Your Result</span>
+            </h1>
+
+            <p class="hero-text">
+                {% if total > 0 %}
+                    You scored {{ ((score / total) * 100)|round|int }}%.
+                {% else %}
+                    No questions were available for this quiz.
+                {% endif %}
+            </p>
+        </section>
+
+        <!-- Submitted answers and explanations -->
+        {% for q in questions %}
+        <article class="zone-card students answer-details"
+                 style="margin-bottom: 16px;">
+
+            <h3>{{ loop.index }}. {{ q.question_text }}</h3>
+
+            <p>
+                Your answer:
+                {{ form_answers.get('question_' ~ q.id, 'Not answered') if form_answers is defined else request.form.get('question_' ~ q.id, 'Not answered') }}
+            </p>
+
+            <p>Correct answer: {{ q.correct_option }}</p>
+
+            <p>{{ q.explanation or 'Keep practising to improve!' }}</p>
+
+        </article>
+        {% endfor %}
+
+        <!-- Level-wise quiz results -->
+        {% if level is defined %}
+
+        <section class="result-message">
+
+            {% if passed %}
+
+                <h2>🎉 Level {{ level }} Complete!</h2>
+
+                <p>Your score: {{ score }}/{{ total }}</p>
+
+                <p>
+                    {% if score == total %}
+                        Perfect score! Excellent work!
+                    {% else %}
+                        Great work! You passed this level.
+                    {% endif %}
+                </p>
+
+                <p>Your next level has been unlocked.</p>
+
+                <div class="result-actions">
+
+                    <!-- Next level: Science or Maths -->
+                    <a class="result-btn"
+                       href="{{ url_for(
+                           'science_level_quiz' if quiz_type|default('maths') == 'science' else 'maths_level_quiz',
+                           subject_id=subject.id,
+                           level=next_level
+                       ) }}">
+                        Play Next Level →
+                    </a>
+
+                    <!-- All levels: Science or Maths -->
+                    <a class="result-btn"
+                       href="{{ url_for(
+                           'science_levels' if quiz_type|default('maths') == 'science' else 'maths_levels',
+                           subject_id=subject.id
+                       ) }}">
+                        All Levels
+                    </a>
+
+                </div>
+
+            {% else %}
+
+                <h2>💪 Keep Practising!</h2>
+
+                <p>Your score: {{ score }}/{{ total }}</p>
+
+                <p>You need at least 7 correct answers to pass.</p>
+
+                <div class="result-actions">
+
+                    <!-- Retry the same subject and level -->
+                    <a class="result-btn"
+                       href="{{ url_for(
+                           'science_level_quiz' if quiz_type|default('maths') == 'science' else 'maths_level_quiz',
+                           subject_id=subject.id,
+                           level=level
+                       ) }}">
+                        Try Level {{ level }} Again ↻
+                    </a>
+
+                    <a class="result-btn"
+                       href="{{ url_for(
+                           'science_levels' if quiz_type|default('maths') == 'science' else 'maths_levels',
+                           subject_id=subject.id
+                       ) }}">
+                        All Levels
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="result-actions">
+
+            {% if level is defined %}
+
+                <a class="result-btn"
+                   href="{{ url_for(
+                       'science_levels' if quiz_type|default('maths') == 'science' else 'maths_levels',
+                       subject_id=subject.id
+                   ) }}">
+                    ← Back to Levels
+                </a>
+
+            {% else %}
+
+                <a class="result-btn"
+                   href="{{ url_for('practice_quiz',
+                                    subject_id=subject.id) }}">
+                    Try Again
+                </a>
+
+            {% endif %}
+
+            <a class="result-btn"
+               href="{{ url_for('subject_options',
+                                subject_id=subject.id) }}">
+                Back to Subject
+            </a>
+
+            <a class="result-btn" href="/">Home</a>
+
+        </div>
+
+    </main>
+</body>
+</html>

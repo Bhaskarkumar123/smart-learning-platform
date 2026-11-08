@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GK / GS Quiz | SmartLearn</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .quiz-container {
+            max-width: 900px;
+            margin: 55px auto;
+            padding: 20px;
+        }
+
+        .quiz-header {
+            margin-bottom: 30px;
+        }
+
+        .quiz-header h1 {
+            font-size: clamp(30px, 5vw, 45px);
+        }
+
+        .quiz-header span {
+            color: #a78bfa;
+        }
+
+        .question-card {
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #302b49;
+            border-radius: 17px;
+            background: linear-gradient(145deg, #19172b, #10101d);
+        }
+
+        .question-card h3 {
+            color: #f5f3ff;
+            font-size: 17px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            color: #a78bfa;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 15px;
+            margin-top: 10px;
+            border: 1px solid #343047;
+            border-radius: 10px;
+            color: #d7d3e8;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .option-label:hover {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,.08);
+        }
+
+        .option-label input {
+            accent-color: #a78bfa;
+            width: 16px;
+            height: 16px;
+        }
+
+        .submit-quiz {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #8b5cf6, #58e3ad);
+            color: #080812;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .submit-quiz:hover {
+            opacity: .9;
+        }
+
+        .quiz-progress {
+            color: #aaa7c2;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .exams-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 25px auto;
+            width:100%;
+        }
+
+        .exams-back-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #7968ed, #5141b8);
+            border: 1px solid #9585ff;
+            box-shadow: 0 5px 20px rgba(121, 104, 237, .25);
+            transition: .3s ease;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <a href="/" class="brand">✦ Smart<span>Learn</span></a>
+    <div class="nav-label">EXAM ARENA · {{ subject_name|default('GK / GS') }}</div>
+</nav>
+
+<main class="container quiz-container">
+
+    <section class="quiz-header">
+        <div class="eyebrow">
+            <span class="status-dot"></span>
+            GENERAL KNOWLEDGE CHALLENGE
+        </div>
+
+        <h1>{{ subject_name|default('GK / GS') }} <span>Quiz</span></h1>
+
+        <p class="quiz-progress">
+            Difficulty: {{ difficulty|default('Mixed') }}
+            {% if level %}
+                | Level {{ level }}
+            {% endif %}
+        </p>
+
+        <p class="quiz-progress">
+            Answer all {{ questions|length }} questions and submit your quiz.
+        </p>
+    </section>
+
+
+    
+        {% if subject_slug is defined and subject_slug %}
+        <form action="{{ url_for(
+            'submit_subject_exam',
+            subject_slug=subject_slug,
+            difficulty=difficulty_slug,
+            level=level
+        ) }}" method="POST">
+        {% else %}
+        <form action="{{ url_for('submit_gk_gs') }}" method="POST">
+        {% endif %}
+
+            {% for q in questions %}
+            <div class="question-card">
+
+                <div class="question-number">
+                    QUESTION {{ loop.index }} / {{ questions|length }}
+                </div>
+
+                <h3>{{ q.question }}</h3>
+
+                {% for option in ['a', 'b', 'c', 'd'] %}
+                <label class="option-label">
+
+                    <input
+                        type="radio"
+                        name="question_{{ q.id }}"
+                        value="{{ option|upper }}"
+                        required
+                    >
+
+                    <span>
+                        {{ option|upper }}.
+                        {{ q['option_' + option] }}
+                    </span>
+
+                </label>
+                {% endfor %}
+
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="submit-quiz">
+                Submit Quiz →
+            </button>
+
+        </form>
+
+        <div class="exams-wrapper">
+            <a href="/exams" class="exams-back-btn">
+                ← Back to Exams
+            </a>
+        </div>                    
+</main>
+
+        <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+
+</body>
+</html>

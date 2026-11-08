@@ -1,0 +1,680 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Quiz | SmartLearn</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .quiz-page {
+            max-width: 720px;
+            margin: auto;
+            padding: 30px 20px 60px;
+        }
+
+        .back-link {
+            color: #63d9ff;
+            text-decoration: none;
+        }
+
+        .quiz-panel {
+            margin-top: 30px;
+            padding: 28px;
+            border-radius: 22px;
+            border: 1px solid rgba(99,217,255,.3);
+            background: rgba(255,255,255,.045);
+        }
+
+        .quiz-visual {
+            text-align: center;
+            font-size: 65px;
+            margin: 20px 0;
+        }
+
+        .answer-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .answer {
+            padding: 16px;
+            color: inherit;
+            font-size: 17px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 12px;
+            background: rgba(255,255,255,.05);
+            cursor: pointer;
+        }
+
+        .answer:disabled { cursor: default; }
+        .answer.correct { border-color: #43e6a0; }
+        .answer.wrong { border-color: #ff7777; }
+
+        .next-button {
+            padding: 13px 20px;
+            margin-top: 20px;
+            background: #63d9ff;
+            color: #07111d;
+            font-weight: bold;
+            border: 0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #feedback {
+            min-height: 25px;
+            line-height: 1.6;
+        }
+
+        @media(max-width: 480px) {
+            .answer-list { grid-template-columns: 1fr; }
+            .quiz-panel { padding: 20px; }
+        }
+    </style>
+</head>
+
+<body>
+<main class="quiz-page">
+    <a href="/kids" class="back-link">← Kids Dashboard</a>
+
+    <section class="quiz-panel">
+        <p id="quizLabel">SMARTLEARN • KIDS QUIZ</p>
+        <h1 id="quizTitle">Let's Learn! 🌟</h1>
+
+        <div class="quiz-visual" id="visual" aria-hidden="true">🔢</div>
+
+        <p id="progress"></p>
+        <h2 id="question"></h2>
+
+        <div class="answer-list" id="answers"></div>
+        <p id="feedback" aria-live="polite"></p>
+
+        <button id="next" class="next-button" hidden>
+            Next Question →
+        </button>
+    </section>
+
+    <footer>
+            <span>✦ SMARTLEARN</span>
+            <span>Built for curious minds. Made for bigger dreams.</span>
+        </footer>
+</main>
+
+<script>
+const quizType = {{ quiz_type | tojson }};
+
+const quizzes = {
+    "count-number": {
+        title: "Count Number 🔢",
+        questions: [
+            { visual: "🔢", q: "What number comes after 4?",options: ["3", "5", "6", "2"], answer: 1 },
+            { visual: "1️⃣ 2️⃣ 3️⃣", q: "What comes after 3?",options: ["2", "5", "4", "1"], answer: 2 },
+            { visual: "🔟", q: "Which number is ten?",options: ["1", "7", "10", "9"], answer: 2 },
+            { visual: "🔢", q: "Which number comes before 8?",options: ["7", "9", "6", "10"], answer: 0 },
+            { visual: "🔢", q: "What number comes before 3?", options: ["4", "1", "2", "3"], answer: 2 },
+            { visual: "6️⃣", q: "Which number is six?", options: ["9", "8", "6", "7"], answer: 2 },
+           
+
+        ]
+    },
+
+    "count-things": {
+        title: "Count Things 🍎",
+        questions: []
+    },
+
+    "first-letter": {
+        title: "First Letter 🔤",
+        questions: []
+    },
+
+    
+    "add-number": {
+        title: "Add Number ➕",
+        questions: []
+    },
+
+
+    "advanced-quiz": {
+        title: "Advanced Quiz 🧠",
+        questions: []
+    }
+};
+
+const quiz = quizzes[quizType];
+
+
+// ---------- Ribbon Celebraton-------------------
+function celebrate() {
+  // Agar phone me "reduce motion" on hai to animation mat chalao
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // Poori screen par canvas banao (click ko nahi rokta)
+  const cv = document.createElement("canvas");
+  cv.style.cssText =
+    "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:99";
+  const W = (cv.width = innerWidth);
+  const H = (cv.height = innerHeight);
+  document.body.appendChild(cv);
+  const ctx = cv.getContext("2d");
+
+  const colors = ["#ff4d6d", "#ffd166", "#06d6a0", "#4cc9f0", "#b388ff", "#ff9f1c"];
+  const ribbons = [];
+
+  // 150 ribbons banao, teen jagah se (left, beech, right)
+  for (let i = 0; i < 150; i++) {
+    const s = i % 3;
+    const angle =
+      -Math.PI / 2 +                       // seedha upar
+      (Math.random() - 0.5) * 1.2 +        // thoda idhar-udhar
+      (s === 0 ? 0.35 : s === 2 ? -0.35 : 0); // kone se andar ki taraf
+    const speed = (0.55 + Math.random() * 0.35) * Math.sqrt(H);
+
+    ribbons.push({
+      x: [0.1, 0.5, 0.9][s] * W,           // start x (screen ke neeche)
+      y: H + 10,                            // start y (screen se thoda neeche)
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      w: 4 + Math.random() * 4,             // ribbon ki chaudai
+      h: 18 + Math.random() * 26,           // ribbon ki lambai
+      r: Math.random() * 6.28,              // ghumav
+      vr: (Math.random() - 0.5) * 0.3,      // ghumne ki speed
+      c: colors[Math.floor(Math.random() * colors.length)],
+      ph: Math.random() * 6.28,
+    });
+  }
+
+  let frame = 0;
+  (function tick() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+    ribbons.forEach((p) => {
+      p.vy += 0.25;                         // gravity (neeche kheenchna)
+      p.vx *= 0.99;
+      p.vy *= 0.992;                        // hawa ka rukaav
+      p.x += p.vx + Math.sin(frame * 0.08 + p.ph) * 0.8; // lehrati hui chaal
+      p.y += p.vy;
+      p.r += p.vr;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.globalAlpha = Math.max(0, Math.min(1, (260 - frame) / 60)); // dheere gayab
+      ctx.fillStyle = p.c;
+      ctx.scale(1, Math.cos(frame * 0.1 + p.ph)); // ribbon palatne ka asar
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if (frame < 260) requestAnimationFrame(tick); // lagbhag 4 second
+    else cv.remove();                              // canvas hata do
+  })();
+}
+
+//--------audio context for sound effects-------------------------
+const AC = window.AudioContext || window.webkitAudioContext;
+let ctx;
+
+function beep(freqs, dur = 0.15) {
+    ctx = ctx || new AC();
+
+    // Browser audio ko activate karne ke liye
+    if (ctx.state === "suspended") {
+        ctx.resume();
+    }
+
+    freqs.forEach((f, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        const t = ctx.currentTime + i * dur;
+
+        o.type = "sine";
+        o.frequency.value = f;
+
+        g.gain.setValueAtTime(0.2, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        o.connect(g);
+        g.connect(ctx.destination);
+
+        o.start(t);
+        o.stop(t + dur);
+    });
+}
+
+const winSound = () => beep([523, 659, 784]);
+const wrongSound = () => beep([220, 180]);
+
+//-------------state-----------------
+let index = 0;
+let score = 0;
+let answered = false;
+let levelScore = 0;
+let showingResult = false;
+
+const QUESTIONS_PER_LEVEL = 10;
+
+const title = document.getElementById("quizTitle");
+const visual = document.getElementById("visual");
+const progress = document.getElementById("progress");
+const question = document.getElementById("question");
+const answers = document.getElementById("answers");
+const feedback = document.getElementById("feedback");
+const next = document.getElementById("next");
+
+title.textContent = quiz.title;
+
+//-----------Automatic question generate-------------------
+let levelQuestions = [];           // abhi chal rahe level ke 10 sawal
+const usedNumbers = new Set();
+const usedThings = new Set();     // jo numbers pehle aa chuke hain
+
+const shuffle = (a) => {
+    const r = [...a];
+    for (let i = r.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [r[i], r[j]] = [r[j], r[i]];
+    }
+    return r;
+};
+
+// 12 ko "1️⃣ 2️⃣" banata hai (keycap emoji sirf ek digit ke liye hota hai)
+const toKeycaps = (n) =>
+    String(n).split("").map((d) => d + "\uFE0F\u20E3").join(" ");
+
+// 3 galat options banata hai (sahi jawab ke paas ke, 1 se max ke andar)
+function makeOptions(answer, max) {
+    const set = new Set([answer]);
+    for (const d of shuffle([-1, 1, -2, 2, -3, 3, -4, 4, 5, -5])) {
+        const x = answer + d;
+        if (x >= 1 && x <= max) set.add(x);
+        if (set.size === 4) break;
+    }
+    while (set.size < 4) set.add(Math.floor(Math.random() * max) + 1);
+    const options = shuffle([...set]);
+    return { options: options.map(String), answer: options.indexOf(answer) };
+}
+
+// Ek level ke 10 sawal banata hai, sab alag number se
+function buildLevel(level) {
+    if (usedNumbers.size >= 100) usedNumbers.clear();   // 100 numbers khatam to dobara shuru
+
+    const max = Math.min(level * 10, 100);
+    const all = Array.from({ length: max }, (_, i) => i + 1);
+
+    // pehle wo numbers lo jo abhi tak nahi aaye
+    let numbers = shuffle(all.filter((n) => !usedNumbers.has(n)))
+        .slice(0, QUESTIONS_PER_LEVEL);
+
+    // kam pad jayein to baaki numbers se bharo (phir bhi koi number do baar nahi)
+    if (numbers.length < QUESTIONS_PER_LEVEL) {
+        const extra = shuffle(all.filter((n) => !numbers.includes(n)));
+        numbers = numbers.concat(extra.slice(0, QUESTIONS_PER_LEVEL - numbers.length));
+    }
+    numbers.forEach((n) => usedNumbers.add(n));
+
+    const types = ["after", "before", "identify"];
+
+    return numbers.map((n, i) => {
+        let type = types[i % 3];
+        if (type === "after" && n === max) type = "before";   // max ke baad number nahi
+        if (type === "before" && n === 1) type = "after";     // 1 se pehle number nahi
+
+        let answer, q, visual;
+        if (type === "after") {
+            answer = n + 1;
+            q = `What number comes after ${n}?`;
+            visual = `${toKeycaps(n)} ➡️ ❓`;
+        } else if (type === "before") {
+            answer = n - 1;
+            q = `What number comes before ${n}?`;
+            visual = `❓ ➡️ ${toKeycaps(n)}`;
+        } else {
+            answer = n;
+            q = `Which option shows the number ${n}?`;
+            visual = "🔢";
+        }
+        return { visual, q, ...makeOptions(answer, max) };
+    });
+}
+
+// Count Things: ek level ke 10 sawal, sab alag cheez se
+const THINGS = [
+  ["🍎","apples"], ["⭐","stars"], ["🐟","fish"], ["🍌","bananas"], ["🎈","balloons"],
+  ["🐶","dogs"], ["🐱","cats"], ["🚗","cars"], ["🌸","flowers"], ["🍓","strawberries"],
+  ["🦆","ducks"], ["🍪","cookies"], ["🐸","frogs"], ["🦋","butterflies"], ["🍇","grapes"],
+  ["⚽","balls"], ["🐘","elephants"], ["🍩","donuts"], ["🐞","ladybugs"], ["🌙","moons"]
+];
+
+function buildCountThingsLevel(level) {
+  if (usedThings.size > 150) usedThings.clear();
+
+  const max = Math.min(3 + level * 2, 12);          // Level 1 = 1 se 5 ... sabse zyada 12
+  const things = shuffle(THINGS).slice(0, QUESTIONS_PER_LEVEL);
+
+  let counts = [];
+  while (counts.length < QUESTIONS_PER_LEVEL) {
+    counts = counts.concat(shuffle(Array.from({ length: max }, (_, i) => i + 1)));
+  }
+  counts = counts.slice(0, QUESTIONS_PER_LEVEL);
+
+  const templates = [
+    (n) => `How many ${n} do you see?`,
+    (n) => `Count the ${n}.`,
+    (n) => `How many ${n} are there?`
+  ];
+
+  return things.map(([emoji, name], i) => {
+    let c = counts[i];
+    if (usedThings.has(emoji + c)) {
+      const free = shuffle(Array.from({ length: max }, (_, k) => k + 1))
+        .find((x) => !usedThings.has(emoji + x));
+      if (free) c = free;
+    }
+    usedThings.add(emoji + c);
+
+    return {
+      visual: Array(c).fill(emoji).join(" "),
+      q: templates[i % 3](name),
+      ...makeOptions(c, max + 3)
+    };
+  });
+}
+
+const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+
+// ---------- First Letter ----------
+const WORDS = [
+  ["🍎","Apple"], ["🐻","Bear"], ["🐱","Cat"], ["🐶","Dog"], ["🐘","Elephant"],
+  ["🐟","Fish"], ["🍇","Grapes"], ["🏠","House"], ["🍦","Ice cream"], ["🧃","Juice"],
+  ["🔑","Key"], ["🦁","Lion"], ["🌙","Moon"], ["🥜","Nut"], ["🍊","Orange"],
+  ["🐧","Penguin"], ["👸","Queen"], ["🌈","Rainbow"], ["☀️","Sun"], ["🌳","Tree"],
+  ["☂️","Umbrella"], ["🎻","Violin"], ["🍉","Watermelon"], ["🪀","Yo-yo"], ["🦓","Zebra"],
+  ["⚽","Ball"], ["🐝","Bee"], ["🚗","Car"], ["🦆","Duck"], ["🥚","Egg"],
+  ["🐸","Frog"], ["🎸","Guitar"], ["🐴","Horse"], ["🥭","Mango"], ["🐙","Octopus"],
+  ["🍍","Pineapple"], ["🚀","Rocket"], ["🐍","Snake"], ["🐯","Tiger"], ["🦄","Unicorn"]
+];
+const usedWords = new Set();
+
+function buildFirstLetterLevel(level) {
+  if (WORDS.filter((w) => !usedWords.has(w[1])).length < QUESTIONS_PER_LEVEL) usedWords.clear();
+
+  const picks = shuffle(WORDS.filter((w) => !usedWords.has(w[1]))).slice(0, QUESTIONS_PER_LEVEL);
+  const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  return picks.map(([emoji, word]) => {
+    usedWords.add(word);
+    const L = word[0];
+    const opts = shuffle([L, ...shuffle(ABC.filter((x) => x !== L)).slice(0, 3)]);
+    return { visual: emoji, q: `${word} starts with which letter?`, options: opts, answer: opts.indexOf(L) };
+  });
+}
+
+// ---------- Add Number ----------
+const ADD_EMOJI = ["🍎", "⭐", "🐟", "🍌", "🎈", "🐶", "🌸", "🍪"];
+const usedPairs = new Set();
+
+function buildAddLevel(level) {
+  const max = Math.min(2 + level * 3, 20);       // Level 1 = jodfal 5 tak, Level 2 = 8, ... sabse zyada 20
+  const all = [];
+  for (let a = 1; a < max; a++)
+    for (let b = 1; a + b <= max; b++) all.push([a, b]);
+
+  let pool = all.filter(([a, b]) => !usedPairs.has(a + "+" + b));
+  if (pool.length < QUESTIONS_PER_LEVEL) {
+    all.forEach(([a, b]) => usedPairs.delete(a + "+" + b));
+    pool = all;
+  }
+
+  return shuffle(pool).slice(0, QUESTIONS_PER_LEVEL).map(([a, b]) => {
+    usedPairs.add(a + "+" + b);
+    const e = ADD_EMOJI[randInt(0, ADD_EMOJI.length - 1)];
+    const vis = a <= 5 && b <= 5
+      ? `${Array(a).fill(e).join(" ")} + ${Array(b).fill(e).join(" ")}`
+      : "🔢";
+    return { visual: vis, q: `What is ${a} + ${b}?`, ...makeOptions(a + b, max + 3) };
+  });
+}
+
+// ---------- Advanced Quiz (5 maths + 5 general) ----------
+const FACTS = [
+  ["🔺","How many sides does a triangle have?","3",["2","4","5"]],
+  ["🟦","How many sides does a square have?","4",["3","5","6"]],
+  ["⬡","How many sides does a hexagon have?","6",["5","7","8"]],
+  ["📚","Which word is a noun?","Teacher",["Quickly","Jump","Happy"]],
+  ["🏃","Which word is a verb?","Run",["Table","Blue","Soft"]],
+  ["🔥","What is the opposite of hot?","Cold",["Warm","Big","Soft"]],
+  ["🐘","What is the opposite of big?","Small",["Tall","Long","Fast"]],
+  ["📅","How many days are in a week?","7",["5","6","8"]],
+  ["🗓️","How many months are in a year?","12",["10","11","13"]],
+  ["🐄","Which animal gives us milk?","Cow",["Lion","Dog","Fish"]],
+  ["🌈","How many colors are in a rainbow?","7",["5","6","8"]],
+  ["🕷️","How many legs does a spider have?","8",["6","4","10"]],
+  ["🖐️","How many fingers are on one hand?","5",["4","6","10"]],
+  ["🌍","Which planet do we live on?","Earth",["Mars","Moon","Sun"]],
+  ["🔤","How many letters are in the English alphabet?","26",["24","25","28"]],
+  ["🐝","Which insect makes honey?","Bee",["Ant","Fly","Ladybug"]],
+  ["🚦","What does a red light mean?","Stop",["Go","Run","Sleep"]],
+  ["👶","What is the plural of 'child'?","Children",["Childs","Childes","Childrens"]],
+  ["🐦","Which animal can fly?","Bird",["Dog","Fish","Cow"]],
+  ["🧊","Frozen water is called?","Ice",["Steam","Cloud","Rain"]],
+  ["🐓","Which animal lays eggs?","Hen",["Horse","Dog","Cow"]],
+  ["🌊","Which is the largest ocean?","Pacific",["Atlantic","Indian","Arctic"]],
+  ["🍎","Which one is a fruit?","Mango",["Potato","Carrot","Onion"]],
+  ["✋","How many days are in a weekend?","2",["1","3","4"]]
+];
+const usedFacts = new Set();
+const usedMath = new Set();
+
+function buildAdvancedLevel(level) {
+  const items = [];
+
+  // 5 maths sawal (har level me thode mushkil)
+  ["add", "sub", "mul", "add", "sub"].forEach((t) => {
+    let a, b, key, tries = 0;
+    do {
+      if (t === "add") { a = randInt(5, 10 + level * 5); b = randInt(5, 10 + level * 5); }
+      else if (t === "sub") { a = randInt(10, 15 + level * 5); b = randInt(2, a - 1); }
+      else { a = randInt(2, Math.min(2 + level, 10)); b = randInt(2, 10); }
+      key = t + a + "_" + b;
+      tries++;
+    } while (usedMath.has(key) && tries < 50);
+    usedMath.add(key);
+
+    const ans = t === "add" ? a + b : t === "sub" ? a - b : a * b;
+    const sym = t === "add" ? "+" : t === "sub" ? "-" : "×";
+    items.push({
+      visual: t === "add" ? "➕" : t === "sub" ? "➖" : "✖️",
+      q: `What is ${a} ${sym} ${b}?`,
+      ...makeOptions(ans, ans + 8)
+    });
+  });
+
+  // 5 general sawal (shape, grammar, opposite, general knowledge)
+  if (FACTS.filter((f) => !usedFacts.has(f[1])).length < 5) usedFacts.clear();
+  shuffle(FACTS.filter((f) => !usedFacts.has(f[1]))).slice(0, 5).forEach(([vis, q, correct, wrongs]) => {
+    usedFacts.add(q);
+    const opts = shuffle([correct, ...wrongs]);
+    items.push({ visual: vis, q, options: opts, answer: opts.indexOf(correct) });
+  });
+
+  return shuffle(items);
+}
+
+// Kaunse quiz automatic hain
+const generators = {
+    "count-number": buildLevel,
+    "count-things": buildCountThingsLevel,
+    "first-letter": buildFirstLetterLevel,
+    "add-number":   buildAddLevel,
+    "advanced-quiz":buildAdvancedLevel
+};
+const isDynamic = quizType in generators;
+
+//------Question dikhana--------------
+function renderQuestion() {
+    answered = false;
+    let item;
+        if (isDynamic) {
+        if (index % QUESTIONS_PER_LEVEL === 0) {
+            levelQuestions = generators[quizType](Math.floor(index / QUESTIONS_PER_LEVEL) + 1) ;
+        }
+        item = levelQuestions[index % QUESTIONS_PER_LEVEL];
+    } else {
+        item = quiz.questions[index];
+    }
+
+    visual.textContent = item.visual;
+    progress.textContent = quizType === "count-number"
+        ? `Level ${Math.floor(index / QUESTIONS_PER_LEVEL) + 1} • Question ${(index % QUESTIONS_PER_LEVEL) + 1} of 10`
+        : `Question ${index + 1} of ${quiz.questions.length}`;
+    question.textContent = item.q;
+    feedback.textContent = "";
+    answers.replaceChildren();
+    next.hidden = true;
+
+    item.options.forEach((option, i) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.textContent = option;
+
+        button.addEventListener("click", () => {
+            if (answered) return;
+            answered = true;
+
+            
+            if (i === item.answer) {
+                score++;
+                levelScore++;
+                winSound();
+
+                feedback.textContent = "🎉 Correct! Great job!";
+            } else {
+                wrongSound();
+
+                feedback.textContent =
+                    "💡 Good try! Correct answer: " +
+                    item.options[item.answer];
+            }
+
+            
+
+
+            [...answers.children].forEach((b, j) => {
+                b.disabled = true;
+                if (j === item.answer) b.classList.add("correct");
+                else if (j === i) b.classList.add("wrong");
+            });
+
+           if (quizType === "count-number") {
+                next.textContent =
+                    (index + 1) % QUESTIONS_PER_LEVEL === 0
+                        ? "See Level Result ⭐"
+                        : "Next Question →";
+            } else {
+                next.textContent =
+                    index === quiz.questions.length - 1
+                        ? "See My Result ⭐"
+                        : "Next Question →";
+            }
+
+            next.hidden = false;
+        });
+
+        answers.appendChild(button);
+    });
+}
+
+
+//--------------Next Button--------------------------
+next.addEventListener("click", () => {
+    if (showingResult) {
+        showingResult = false;
+
+        if (isDynamic) {
+            index++;
+            levelScore = 0;
+            renderQuestion();
+        } else if (index < quiz.questions.length - 1) {
+            index++;
+            levelScore = 0;
+            renderQuestion();
+        } else {
+            index = 0;
+            score = 0;
+            levelScore = 0;
+            renderQuestion();
+        }
+
+        return;
+    }
+
+    if (isDynamic) {
+        if ((index + 1) % QUESTIONS_PER_LEVEL === 0) {
+            showResult();
+        } else {
+            index++;
+            renderQuestion();
+        }
+
+        return;
+    }
+
+    const isLevelEnd =
+        (index + 1) % QUESTIONS_PER_LEVEL === 0;
+
+    const isQuizEnd =
+        index === quiz.questions.length - 1;
+
+    if (isLevelEnd || isQuizEnd) {
+        showResult();
+    } else {
+        index++;
+        renderQuestion();
+    }
+});
+
+
+
+//-------------Level result---------------------
+function showResult() {
+    celebrate();
+    showingResult = true;
+
+    const level = Math.floor(
+        index / QUESTIONS_PER_LEVEL
+    ) + 1;
+
+    const isQuizEnd = quizType !== "count-number" &&
+    index === quiz.questions.length - 1;
+
+    visual.textContent = isQuizEnd ? "🏆" : "🌟";
+    progress.textContent = `LEVEL ${level} COMPLETED`;
+    question.textContent = isQuizEnd
+        ? "Amazing! You completed all levels!"
+        : `Great job! Level ${level} is complete!`;
+
+    answers.replaceChildren();
+
+    const total = isDynamic
+        ? QUESTIONS_PER_LEVEL
+        : Math.min(QUESTIONS_PER_LEVEL, quiz.questions.length - (level - 1) * QUESTIONS_PER_LEVEL);
+
+    feedback.textContent =
+        `Level ${level} score: ${levelScore} / ${total}`;
+
+    next.textContent = isQuizEnd
+        ? "Play Again 🔄"
+        : "Next Level 🔓";
+
+    next.hidden = false;
+}
+
+renderQuestion();
+</script>
+</body>
+</html>

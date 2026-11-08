@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject.name }} | SmartLearn</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<style>
+    
+/* Back to Subjects Button */
+
+
+.back-button-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 35px;
+    margin-bottom: 25px;
+    padding-top: 10px;
+}
+
+.back-subjects-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: 1px solid rgba(124, 92, 255, 0.4);
+    border-radius: 12px;
+    background: linear-gradient(
+        135deg,
+        rgba(124, 92, 255, 0.18),
+        rgba(61, 240, 255, 0.08)
+    );
+    color: #c8baff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.back-subjects-btn:hover {
+    background: linear-gradient(135deg, #7c5cff, #6044d8);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(124, 92, 255, 0.3);
+}
+
+</style>
+
+<body>
+    <header class="navbar">
+        <a class="brand" href="/">Smart<span>Learn</span></a>
+        <span class="nav-label">LEARN · PRACTICE · GROW</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <span class="eyebrow">
+                CLASS {{ subject.class_number }}
+            </span>
+
+            <h1>
+                {{ subject.name }}<br>
+                <span>Choose your learning mode</span>
+            </h1>
+
+            <p class="hero-text">
+                Learn concepts or test what you know.
+            </p>
+        </section>
+
+        <section class="zones">
+
+            <!-- Study Notes: available for every subject -->
+            <a href="{{ url_for('study_notes', subject_id=subject.id) }}"
+               class="zone-card students"
+               style="text-decoration: none; color: inherit;">
+
+                <div class="illustration">📘</div>
+                <h3>Study Notes</h3>
+                <p>Read concepts and revise important formulas.</p>
+
+                <div class="card-bottom">
+                    <span>Start learning</span>
+                    <span>→</span>
+                </div>
+            </a>
+
+
+            <!-- Maths Level Quiz -->
+            {% if subject.name|lower in ['maths', 'mathematics'] %}
+            <a href="{{ url_for('maths_levels', subject_id=subject.id) }}"
+               class="zone-card students"
+               style="text-decoration: none; color: inherit;">
+
+                <div class="illustration">🎯</div>
+                <h3>Maths Level Quiz</h3>
+                <p>
+                    Complete 10 questions per level and unlock
+                    the next challenge.
+                </p>
+
+                <div class="card-bottom">
+                    <span>Choose Level</span>
+                    <span>→</span>
+                </div>
+            </a>
+            {% endif %}
+
+
+            <!-- Science Level Quiz -->
+            {% if subject.name|lower == 'science' %}
+            <a href="{{ url_for('science_levels', subject_id=subject.id) }}"
+               class="zone-card students"
+               style="text-decoration: none; color: inherit;">
+
+                <div class="illustration">🔬</div>
+                <h3>Science Level Quiz</h3>
+                <p>
+                    Explore science questions, complete each level
+                    and unlock your next challenge.
+                </p>
+
+                <div class="card-bottom">
+                    <span>Choose Level</span>
+                    <span>→</span>
+                </div>
+            </a>
+            {% endif %}
+
+        </section>
+
+       <div class="back-button-wrapper">
+            <a href="{{ url_for('class_subjects', class_id=subject.class_id) }}"
+            class="back-subjects-btn">
+                ← Back to Subjects
+            </a>
+        </div>
+        </p>
+    </main>
+</body>
+</html>
